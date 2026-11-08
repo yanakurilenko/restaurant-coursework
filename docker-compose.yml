@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # 1. База данных PostgreSQL (хранит меню и заказы)
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: restaurant
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # 2. Серверная часть (приложение ресторана)
+  backend:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install && node server.js"
+    environment:
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: restaurant
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # 3. Фронтенд (сайт ресторана)
+  frontend:
+    build: ./frontend
+    networks:
+      - app-network
+
+  # 4. Обратный прокси (Nginx)
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

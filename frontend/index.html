@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ресторан "Вкусно" - Управление заказами</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        header { background: #d32f2f; color: white; padding: 15px; text-align: center; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .menu-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .btn { background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #45a049; }
+        #cart { margin-top: 20px; padding: 10px; background: #e8f5e9; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Система управления заказами "Вкусно"</h1>
+    </header>
+    <div class="container">
+        <h2>Меню ресторана</h2>
+        <div id="menu">
+            <div class="menu-item">
+                <span>Пицца Маргарита</span>
+                <span>500 руб. <button class="btn" onclick="addToCart('Пицца Маргарита', 500)">Заказать</button></span>
+            </div>
+            <div class="menu-item">
+                <span>Бургер с говядиной</span>
+                <span>350 руб. <button class="btn" onclick="addToCart('Бургер', 350)">Заказать</button></span>
+            </div>
+            <div class="menu-item">
+                <span>Паста Карбонара</span>
+                <span>450 руб. <button class="btn" onclick="addToCart('Паста Карбонара', 450)">Заказать</button></span>
+            </div>
+        </div>
+
+        <div id="cart">
+            <h3>Корзина</h3>
+            <ul id="cart-list"></ul>
+            <button class="btn" onclick="checkout()">Оформить заказ</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            renderCart();
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cart-list');
+            list.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name} - ${item.price} руб.`;
+                list.appendChild(li);
+                total += item.price;
+            });
+            if (cart.length > 0) {
+                const li = document.createElement('li');
+                li.style.fontWeight = 'bold';
+                li.textContent = `Итого: ${total} руб.`;
+                list.appendChild(li);
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Корзина пуста!');
+                return;
+            }
+            alert('Заказ успешно оформлен! (Данные отправлены на сервер)');
+            cart = [];
+            renderCart();
+        }
+    </script>
+</body>
+</html>
